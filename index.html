@@ -239,7 +239,10 @@ async function callProxy(query) {
 
     const json = await res.json();
     if (!json.ok) throw new Error(json.error || '서버 오류');
-    const text = json.data.content[0].text;
+    const text = (json.data.content || [])
+  .filter(b => b.type === 'text')
+  .map(b => b.text)
+  .join('');
     const clean = text.replace(/```json|```/g, '').trim();
 
     let parsed;
