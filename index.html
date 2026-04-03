@@ -237,9 +237,9 @@ async function callProxy(query) {
       body: JSON.stringify({ query: query, category: curCat })
     });
 
-    if (!res.ok) throw new Error(`서버 오류 (${res.status})`);
-
-    const text = await res.text();
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || '서버 오류');
+    const text = json.data.content[0].text;
     const clean = text.replace(/```json|```/g, '').trim();
 
     let parsed;
