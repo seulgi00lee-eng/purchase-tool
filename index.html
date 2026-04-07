@@ -267,12 +267,18 @@ async function callProxy(query) {
 
     if (parsed.error) throw new Error(parsed.error);
 
+    // Apps Script가 {ok:true, data:{...}} 구조로 감싸는 경우 처리
+    const resultData = (parsed.ok && parsed.data) ? parsed.data : parsed;
+
+    // data가 문자열인 경우 한번 더 파싱
+    const finalData = (typeof resultData === 'string') ? JSON.parse(resultData) : resultData;
+
     // products가 없거나 비어있으면 오류
-    if (!parsed.products || parsed.products.length === 0) {
+    if (!finalData.products || finalData.products.length === 0) {
       throw new Error('제품 데이터가 없습니다. 다시 시도해주세요.');
     }
 
-    render(parsed, query);
+    render(finalData, query);
 
   } catch(e) {
     console.error('Error:', e);
